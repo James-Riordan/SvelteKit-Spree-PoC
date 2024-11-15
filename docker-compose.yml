@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  sveltekit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+    environment:
+      - NODE_ENV=development
+    command: ["yarn", "dev"]  # For development with hot-reloading
+
+  sveltekit-production:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=production
+    command: ["yarn", "preview"]  # For production with the built app
