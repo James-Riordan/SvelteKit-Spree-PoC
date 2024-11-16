@@ -1,0 +1,42 @@
+# Base image for lightweight Ruby setup
+FROM ruby:3.2.2-alpine
+
+# Install essential packages
+RUN apk update && apk add --no-cache \
+    build-base \
+    nodejs \
+    yarn \
+    postgresql-dev \
+    git \
+    imagemagick \
+    file \
+    tzdata \
+    bash \
+    libxml2-dev \
+    libxslt-dev \
+    redis
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the Gemfile and Gemfile.lock
+COPY Gemfile Gemfile.lock ./
+
+# Install bundler and gems
+RUN gem install bundler -v 2.4.19 && bundle install
+
+# Copy the application code
+COPY . .
+
+# Ensure that the Rails environment is set for development
+ENV RAILS_ENV=development
+ENV BUNDLE_PATH=/gems
+
+# Precompile assets for hot reload support
+RUN bundle exec rails assets:precompile
+
+# Expose the Rails server port
+EXPOSE 3000
+
+# Run migrations before starting the server
+CMD ["bash", "-c", "bundle exec rails db:migrate && bundle exec rails server -b 0.0.0.0"]

@@ -1,0 +1,23 @@
+FROM node:20
+
+LABEL Developers="James Riordan"
+
+WORKDIR /app
+
+COPY yarn.lock package.json ./
+
+RUN yarn install
+
+COPY . .
+
+# RUN yarn build
+
+# Expose port 3000 for the SvelteKit app and 24678 for Vite's HMR
+
+EXPOSE 3000
+EXPOSE 24678
+
+ENV NODE_ENV=development
+
+# Command to run the app based on NODE_ENV (production vs development)
+CMD ["sh", "-c", "if [ \"$NODE_ENV\" = 'production' ]; then yarn preview; else yarn start; fi"]
